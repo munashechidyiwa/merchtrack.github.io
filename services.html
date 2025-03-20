@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Maven Pro', sans-serif;
+            background-image: url('tran.png'); /* Replace with your image */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+        }
+
+        .background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8); /* Adjust this to change opacity */
+            z-index: 1; /* Overlay above background */
+        }
+
+        .container {
+            border: 3px solid green;
+            border-radius: 15px;
+            padding: 40px; /* Increased padding */
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            margin: 20px; /* Margin for spacing */
+            width: 90%; /* Full width with margin */
+            max-width: 1000px; /* Enlarged maximum width */
+            position: relative; /* Position relative to overlay */
+            z-index: 2; /* Bring container above overlay */
+        }
+
+        h1 {
+            color: green;
+            margin-bottom: 20px;
+        }
+
+        .small-container {
+            border: 2px solid green;
+            border-radius: 10px;
+            padding: 20px; /* Increased padding for small containers */
+            text-align: center;
+            margin: 15px 0; /* Vertical margin */
+            cursor: pointer;
+            background-color: rgba(0, 128, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .small-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .small-container h2 {
+            color: green;
+            margin: 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 20px; /* Space above button */
+        }
+
+        button:hover {
+            background-color: darkgreen;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px; /* Reduced padding on small screens */
+            }
+
+            button {
+                width: 100%; /* Full width button on small screens */
+            }
+
+            .small-container {
+                padding: 15px; /* Adjust padding for small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-overlay"></div> <!-- Overlay for background opacity -->
+
+    <!-- Main Container -->
+    <div class="container">
+        <h1>Terminal Management</h1>
+        <div class="small-container" onclick="window.location.href='dispatched.html'">
+            <h2>Deployed Terminals</h2>
+        </div>
+        <div class="small-container" onclick="window.location.href='returned.html'">
+            <h2>Recalled Terminals</h2>
+        </div>
+        <button onclick="window.location.href='index.html'"">Back</button> <!-- Back button -->
+    </div>
+
+</body>
+</html>
