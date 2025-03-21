@@ -16,9 +16,31 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            background-image: url('digital1.jpg'); /* Replace with your image */
+            background-image: url('one.png'); /* Replace with your image */
             background-size: cover;
             background-position: center;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px 20px;
+            background-color: white; /* No opacity */
+            border-bottom: 3px solid green;
+        }
+
+        .header img {
+            height: 50px; /* Adjust logo height */
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: white; /* No opacity */
+            border-top: 3px solid green;
+            width: 100%; /* Full width */
+            margin-top: auto; /* Push footer to the bottom */
         }
 
         .container {
@@ -132,14 +154,38 @@
             text-decoration: none;
             cursor: pointer;
         }
+        .modal-header {
+            margin-bottom: 20px;
+            text-align: center; /* Center align */
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: green;
+        }
+
+        .modal-subheader {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
+    <div class="header">
+        <img src="nbs-logo.png" alt="Logo"> <!-- Replace with your logo image -->
+        <h1>NBS Bank</h1>
+    </div>
+
+    <div class="overlay"></div> <!-- Overlay for background opacity -->
+
 
     <div class="container">
         <h1>Search Returned Terminals</h1>
 
-        <input type="text" id="merchantName" placeholder="Merchant Name">
+        <input type="text" id="terminalSerial" placeholder="Terminal Serial Number (Max 10 alphanumeric)">
         <input type="date" id="startDate" placeholder="Start Date">
         <input type="date" id="endDate" placeholder="End Date">
         <button onclick="searchTerminals()">Search</button>
@@ -149,9 +195,8 @@
             <thead>
                 <tr>
                     <th>Terminal Type</th>
-                    <th>Merchant Name</th>
-                    <th>TID</th>
                     <th>Terminal Serial</th>
+                    <th>TID</th>
                     <th>Line Serial</th>
                     <th>Date Returned</th>
                     <th>Reason for Return</th>
@@ -177,7 +222,9 @@
     <div id="addTerminalModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Add Terminal</h2>
+            <div class="modal-header">
+                <h2>Add Terminal</h2>
+            </div>
             <select id="terminalType" required>
                 <option value="" disabled selected>Select Terminal</option>
                 <option value="Aisino A75">Aisino A75</option>
@@ -185,12 +232,11 @@
                 <option value="PAX S20">PAX S20</option>
                 <option value="iPOS">iPOS</option>
             </select>
-            <input type="text" id="merchantNameForAdd" placeholder="Merchant Name (4-20 alphanumeric)" required>
-            <input type="text" id="tid" placeholder="TID (Starts with NBS)" required>
-            <input type="text" id="terminalSerial" placeholder="Terminal Serial (6-11 alphanumeric)" required>
+            <input type="text" id="terminalSerialForAdd" placeholder="Terminal Serial Number (Max 10 alphanumeric)" maxlength="10" required>
+            <input type="text" id="tid" placeholder="TID (Starts with NBS, Max 10)" maxlength="10" required>
             <input type="text" id="lineSerial" placeholder="Line Serial (16-18 digits)" required>
             <input type="date" id="dispatchedDate" placeholder="Date Dispatched" required>
-            <input type="text" id="returnReason" placeholder="Reason for Return" required>
+            <input type="text" id="returnReason" placeholder="Reason for Return (Max 20)" maxlength="20" required>
             <select id="approvedBy" required>
                 <option value="" disabled selected>Select Approved By</option>
                 <option value="Tinashe Mariridza">Tinashe Mariridza</option>
@@ -202,12 +248,22 @@
             <div id="addErrorMessage" class="error-message"></div>
         </div>
     </div>
+    <div class="footer">
+        <p style="color: green;">© 2025 NBS Bank</p>
+        <p style="color: black;">All rights reserved</p>
+    </div>
 
     <script>
         const existingTerminals = []; // Array to store existing terminals
 
         function validateDates(startDate, endDate) {
             const today = new Date();
+            if (startDate && !endDate) {
+                return 'Please enter an end date.';
+            }
+            if (!startDate && endDate) {
+                return 'Please enter a start date.';
+            }
             if (startDate > endDate) {
                 return 'Start date cannot be ahead of end date.';
             }
@@ -218,30 +274,40 @@
         }
 
         function searchTerminals() {
+            const terminalSerial = document.getElementById('terminalSerial').value;
             const startDateInput = document.getElementById('startDate').value;
             const endDateInput = document.getElementById('endDate').value;
-            const merchantName = document.getElementById('merchantName').value;
 
             const startDate = new Date(startDateInput);
             const endDate = new Date(endDateInput);
 
-            // Check if all fields are empty
-            if (!merchantName && !startDateInput && !endDateInput) {
-                document.getElementById('errorMessage').innerText = 'Please enter a merchant name or select date range.';
+            // Check if both date fields are filled
+            if ((startDateInput && !endDateInput) || (!startDateInput && endDateInput)) {
+                document.getElementById('errorMessage').innerText = 'Both start date and end date must be filled.';
                 document.getElementById('errorMessage').style.display = 'block';
                 return;
             }
 
-            const dateError = validateDates(startDate, endDate);
-            if (dateError) {
-                document.getElementById('errorMessage').innerText = dateError;
+            // Check if all fields are empty
+            if (!terminalSerial && !startDateInput && !endDateInput) {
+                document.getElementById('errorMessage').innerText = 'Please enter a terminal serial number or select date range.';
                 document.getElementById('errorMessage').style.display = 'block';
                 return;
+            }
+
+            // Ensure both date fields are filled if one is present
+            if (startDateInput || endDateInput) {
+                const dateError = validateDates(startDate, endDate);
+                if (dateError) {
+                    document.getElementById('errorMessage').innerText = dateError;
+                    document.getElementById('errorMessage').style.display = 'block';
+                    return;
+                }
             }
 
             // Sample data for demonstration purposes
             const sampleData = [
-                { type: 'Aisino A75', merchant: 'Merchant 1', tid: 'NBS123', serial: 'ABC123', line: '1234567890123456', date: '2023-01-10', reason: 'Defective', approved: 'Tinashe Mariridza' },
+                { type: 'Aisino A75', serial: 'ABC123', tid: 'NBS123', line: '1234567890123456', date: '2023-01-10', reason: 'Defective', approved: 'Tinashe Mariridza' },
                 // Add more sample records as needed
             ];
 
@@ -251,13 +317,15 @@
             let hasRecords = false;
 
             sampleData.forEach(record => {
-                if (!merchantName || record.merchant.toLowerCase().includes(merchantName.toLowerCase())) {
+                if (
+                    (!terminalSerial || record.serial.toLowerCase().includes(terminalSerial.toLowerCase())) &&
+                    (!startDateInput || !endDateInput || (new Date(record.date) >= startDate && new Date(record.date) <= endDate))
+                ) {
                     recordsBody.innerHTML += `
                         <tr>
                             <td>${record.type}</td>
-                            <td>${record.merchant}</td>
-                            <td>${record.tid}</td>
                             <td>${record.serial}</td>
+                            <td>${record.tid}</td>
                             <td>${record.line}</td>
                             <td>${record.date}</td>
                             <td>${record.reason}</td>
@@ -271,7 +339,10 @@
             if (!hasRecords) {
                 document.getElementById('errorMessage').innerText = 'No records found.';
                 document.getElementById('errorMessage').style.display = 'block';
-                document.getElementById('exportOptions').style.display = 'none'; // Hide export buttons if no records
+                // Clear the input fields if no records are found
+                document.getElementById('terminalSerial').value = '';
+                document.getElementById('startDate').value = '';
+                document.getElementById('endDate').value = '';
             } else {
                 document.getElementById('recordsTable').style.display = 'table';
                 document.getElementById('exportOptions').style.display = 'block'; // Show export buttons
@@ -295,41 +366,41 @@
 
         function addTerminal() {
             const terminalType = document.getElementById('terminalType').value;
-            const merchantName = document.getElementById('merchantNameForAdd').value;
+            const terminalSerial = document.getElementById('terminalSerialForAdd').value;
             const tid = document.getElementById('tid').value;
-            const terminalSerial = document.getElementById('terminalSerial').value;
             const lineSerial = document.getElementById('lineSerial').value;
             const dispatchedDateInput = document.getElementById('dispatchedDate').value;
             const returnReason = document.getElementById('returnReason').value;
             const approvedBy = document.getElementById('approvedBy').value;
 
-            const merchantNamePattern = /^[a-zA-Z0-9]{4,20}$/; // Alphanumeric, 4-20 chars
+            const terminalSerialPattern = /^[a-zA-Z0-9]{1,10}$/; // Alphanumeric, 1-10 chars
             const tidPattern = /^NBS/; // TID must start with NBS
-            const terminalSerialPattern = /^[a-zA-Z0-9]{6,11}$/; // 6-11 alphanumeric
             const lineSerialPattern = /^[0-9]{16,18}$/; // 16-18 digits
 
             document.getElementById('addErrorMessage').style.display = 'none'; // Reset error message
 
-            if (!terminalType || !merchantName || !tid || !terminalSerial || !lineSerial || !dispatchedDateInput || !returnReason || !approvedBy) {
+            // Check for existing terminal ID
+            const terminalExists = existingTerminals.some(terminal => terminal.serial === terminalSerial);
+            if (terminalExists) {
+                document.getElementById('addErrorMessage').innerText = 'Terminal ID already exists in the database.';
+                document.getElementById('addErrorMessage').style.display = 'block';
+                return;
+            }
+
+            if (!terminalType || !terminalSerial || !tid || !lineSerial || !dispatchedDateInput || !returnReason || !approvedBy) {
                 document.getElementById('addErrorMessage').innerText = 'Please fill in all fields.';
                 document.getElementById('addErrorMessage').style.display = 'block';
                 return;
             }
 
-            if (!merchantNamePattern.test(merchantName)) {
-                document.getElementById('addErrorMessage').innerText = 'Merchant name must be alphanumeric (4-20 chars).';
+            if (!terminalSerialPattern.test(terminalSerial)) {
+                document.getElementById('addErrorMessage').innerText = 'Terminal Serial Number must be alphanumeric (1-10 chars).';
                 document.getElementById('addErrorMessage').style.display = 'block';
                 return;
             }
 
             if (!tidPattern.test(tid)) {
                 document.getElementById('addErrorMessage').innerText = 'TID must start with "NBS".';
-                document.getElementById('addErrorMessage').style.display = 'block';
-                return;
-            }
-
-            if (!terminalSerialPattern.test(terminalSerial)) {
-                document.getElementById('addErrorMessage').innerText = 'Terminal Serial must be 6-11 alphanumeric.';
                 document.getElementById('addErrorMessage').style.display = 'block';
                 return;
             }
@@ -348,20 +419,19 @@
             }
 
             // Add to existing terminals array
-            const newTerminal = { terminalType, merchantName, tid, terminalSerial, lineSerial, dispatchedDate: dispatchedDateInput, returnReason, approvedBy };
+            const newTerminal = { terminalType, serial: terminalSerial, tid, lineSerial, dispatchedDate: dispatchedDateInput, returnReason, approvedBy };
             existingTerminals.push(newTerminal);
 
             // Clear inputs
             document.getElementById('terminalType').selectedIndex = 0;
-            document.getElementById('merchantNameForAdd').value = '';
+            document.getElementById('terminalSerialForAdd').value = '';
             document.getElementById('tid').value = '';
-            document.getElementById('terminalSerial').value = '';
             document.getElementById('lineSerial').value = '';
             document.getElementById('dispatchedDate').value = '';
             document.getElementById('returnReason').value = '';
             document.getElementById('approvedBy').selectedIndex = 0;
 
-            alert(`Successfully added terminal:\nType: ${terminalType}\nMerchant: ${merchantName}\nTID: ${tid}\nTerminal Serial: ${terminalSerial}\nLine Serial: ${lineSerial}\nDate: ${dispatchedDateInput}\nReason: ${returnReason}\nApproved by: ${approvedBy}`);
+            alert(`Successfully added terminal:\nType: ${terminalType}\nTerminal Serial: ${terminalSerial}\nTID: ${tid}\nLine Serial: ${lineSerial}\nDate: ${dispatchedDateInput}\nReason: ${returnReason}\nApproved by: ${approvedBy}`);
 
             closeModal(); // Close the modal after adding
         }

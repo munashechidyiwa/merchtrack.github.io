@@ -11,7 +11,7 @@
             padding: 0;
             height: 100%;
             font-family: 'Maven Pro', sans-serif;
-            background-image: url('tran.png'); /* Replace with your image */
+            background-image: url('terminal.jpg'); /* Replace with your image */
             background-size: cover;
             background-position: center;
             position: relative;
@@ -19,13 +19,35 @@
             justify-content: center; /* Center horizontally */
             align-items: center; /* Center vertically */
         }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px 20px;
+            background-color: white; /* No opacity */
+            border-bottom: 3px solid green;
+        }
+
+        .header img {
+            height: 50px; /* Adjust logo height */
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: white; /* No opacity */
+            border-top: 3px solid green;
+            width: 100%; /* Full width */
+            margin-top: auto; /* Push footer to the bottom */
+        }
 
         .background-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 100;
+            left: 100;
+            right: 100;
+            bottom: 100;
             background-color: rgba(255, 255, 255, 0.8); /* Adjust this to change opacity */
             z-index: 1; /* Overlay above background */
         }
@@ -98,6 +120,22 @@
             .small-container {
                 padding: 15px; /* Adjust padding for small screens */
             }
+        }
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: green;
+        }
+
+        .modal-subheader {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
         }
     </style>
 </head>
