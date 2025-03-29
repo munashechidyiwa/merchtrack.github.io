@@ -188,7 +188,7 @@
         <input type="text" id="terminalSerial" placeholder="Terminal Serial Number (Max 10 alphanumeric)">
         <input type="date" id="startDate" placeholder="Start Date">
         <input type="date" id="endDate" placeholder="End Date">
-        <button onclick="searchTerminals()">Search</button>
+        <button onclick="search()">Search</button>
         <div id="errorMessage" class="error-message"></div>
 
         <table class="record-table" id="recordsTable" style="display: none;">
@@ -244,7 +244,7 @@
                 <option value="Olivia Usai">Olivia Usai</option>
                 <option value="Mufaro Maphosa">Mufaro Maphosa</option>
             </select>
-            <button onclick="addTerminal()">Add to Database</button>
+            <button onclick="addToDatabase()">Add to Database</button>
             <div id="addErrorMessage" class="error-message"></div>
         </div>
     </div>
@@ -273,81 +273,6 @@
             return null;
         }
 
-        function searchTerminals() {
-            const terminalSerial = document.getElementById('terminalSerial').value;
-            const startDateInput = document.getElementById('startDate').value;
-            const endDateInput = document.getElementById('endDate').value;
-
-            const startDate = new Date(startDateInput);
-            const endDate = new Date(endDateInput);
-
-            // Check if both date fields are filled
-            if ((startDateInput && !endDateInput) || (!startDateInput && endDateInput)) {
-                document.getElementById('errorMessage').innerText = 'Both start date and end date must be filled.';
-                document.getElementById('errorMessage').style.display = 'block';
-                return;
-            }
-
-            // Check if all fields are empty
-            if (!terminalSerial && !startDateInput && !endDateInput) {
-                document.getElementById('errorMessage').innerText = 'Please enter a terminal serial number or select date range.';
-                document.getElementById('errorMessage').style.display = 'block';
-                return;
-            }
-
-            // Ensure both date fields are filled if one is present
-            if (startDateInput || endDateInput) {
-                const dateError = validateDates(startDate, endDate);
-                if (dateError) {
-                    document.getElementById('errorMessage').innerText = dateError;
-                    document.getElementById('errorMessage').style.display = 'block';
-                    return;
-                }
-            }
-
-            // Sample data for demonstration purposes
-            const sampleData = [
-                { type: 'Aisino A75', serial: 'ABC123', tid: 'NBS123', line: '1234567890123456', date: '2023-01-10', reason: 'Defective', approved: 'Tinashe Mariridza' },
-                // Add more sample records as needed
-            ];
-
-            const recordsBody = document.getElementById('recordsBody');
-            recordsBody.innerHTML = ''; // Clear previous records
-
-            let hasRecords = false;
-
-            sampleData.forEach(record => {
-                if (
-                    (!terminalSerial || record.serial.toLowerCase().includes(terminalSerial.toLowerCase())) &&
-                    (!startDateInput || !endDateInput || (new Date(record.date) >= startDate && new Date(record.date) <= endDate))
-                ) {
-                    recordsBody.innerHTML += `
-                        <tr>
-                            <td>${record.type}</td>
-                            <td>${record.serial}</td>
-                            <td>${record.tid}</td>
-                            <td>${record.line}</td>
-                            <td>${record.date}</td>
-                            <td>${record.reason}</td>
-                            <td>${record.approved}</td>
-                        </tr>
-                    `;
-                    hasRecords = true;
-                }
-            });
-
-            if (!hasRecords) {
-                document.getElementById('errorMessage').innerText = 'No records found.';
-                document.getElementById('errorMessage').style.display = 'block';
-                // Clear the input fields if no records are found
-                document.getElementById('terminalSerial').value = '';
-                document.getElementById('startDate').value = '';
-                document.getElementById('endDate').value = '';
-            } else {
-                document.getElementById('recordsTable').style.display = 'table';
-                document.getElementById('exportOptions').style.display = 'block'; // Show export buttons
-            }
-        }
 
         function validateFutureDate(dateInput) {
             const today = new Date();
@@ -364,77 +289,7 @@
             document.getElementById('addErrorMessage').style.display = 'none'; // Reset error message
         }
 
-        function addTerminal() {
-            const terminalType = document.getElementById('terminalType').value;
-            const terminalSerial = document.getElementById('terminalSerialForAdd').value;
-            const tid = document.getElementById('tid').value;
-            const lineSerial = document.getElementById('lineSerial').value;
-            const dispatchedDateInput = document.getElementById('dispatchedDate').value;
-            const returnReason = document.getElementById('returnReason').value;
-            const approvedBy = document.getElementById('approvedBy').value;
-
-            const terminalSerialPattern = /^[a-zA-Z0-9]{1,10}$/; // Alphanumeric, 1-10 chars
-            const tidPattern = /^NBS/; // TID must start with NBS
-            const lineSerialPattern = /^[0-9]{16,18}$/; // 16-18 digits
-
-            document.getElementById('addErrorMessage').style.display = 'none'; // Reset error message
-
-            // Check for existing terminal ID
-            const terminalExists = existingTerminals.some(terminal => terminal.serial === terminalSerial);
-            if (terminalExists) {
-                document.getElementById('addErrorMessage').innerText = 'Terminal ID already exists in the database.';
-                document.getElementById('addErrorMessage').style.display = 'block';
-                return;
-            }
-
-            if (!terminalType || !terminalSerial || !tid || !lineSerial || !dispatchedDateInput || !returnReason || !approvedBy) {
-                document.getElementById('addErrorMessage').innerText = 'Please fill in all fields.';
-                document.getElementById('addErrorMessage').style.display = 'block';
-                return;
-            }
-
-            if (!terminalSerialPattern.test(terminalSerial)) {
-                document.getElementById('addErrorMessage').innerText = 'Terminal Serial Number must be alphanumeric (1-10 chars).';
-                document.getElementById('addErrorMessage').style.display = 'block';
-                return;
-            }
-
-            if (!tidPattern.test(tid)) {
-                document.getElementById('addErrorMessage').innerText = 'TID must start with "NBS".';
-                document.getElementById('addErrorMessage').style.display = 'block';
-                return;
-            }
-
-            if (!lineSerialPattern.test(lineSerial)) {
-                document.getElementById('addErrorMessage').innerText = 'Line Serial must be 16-18 digits.';
-                document.getElementById('addErrorMessage').style.display = 'block';
-                return;
-            }
-
-            // Validate dispatched date
-            if (!validateFutureDate(dispatchedDateInput)) {
-                document.getElementById('addErrorMessage').innerText = 'Dispatched date cannot be in the future.';
-                document.getElementById('addErrorMessage').style.display = 'block';
-                return;
-            }
-
-            // Add to existing terminals array
-            const newTerminal = { terminalType, serial: terminalSerial, tid, lineSerial, dispatchedDate: dispatchedDateInput, returnReason, approvedBy };
-            existingTerminals.push(newTerminal);
-
-            // Clear inputs
-            document.getElementById('terminalType').selectedIndex = 0;
-            document.getElementById('terminalSerialForAdd').value = '';
-            document.getElementById('tid').value = '';
-            document.getElementById('lineSerial').value = '';
-            document.getElementById('dispatchedDate').value = '';
-            document.getElementById('returnReason').value = '';
-            document.getElementById('approvedBy').selectedIndex = 0;
-
-            alert(`Successfully added terminal:\nType: ${terminalType}\nTerminal Serial: ${terminalSerial}\nTID: ${tid}\nLine Serial: ${lineSerial}\nDate: ${dispatchedDateInput}\nReason: ${returnReason}\nApproved by: ${approvedBy}`);
-
-            closeModal(); // Close the modal after adding
-        }
+        
 
         function exportToExcel() {
             const table = document.getElementById('recordsTable');
@@ -458,6 +313,7 @@
             pdf.save('terminals.pdf');
         }
     </script>
+    <script src="firebase-config.js" type="module"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.12/jspdf.plugin.autotable.min.js"></script>
 </body>

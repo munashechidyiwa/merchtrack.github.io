@@ -278,123 +278,8 @@
     </div>
 
     <script>
-        function search() {
-            const branch = document.querySelector('input[name="branch"]:checked');
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            const errorMessage = document.getElementById('error-message');
 
-            errorMessage.textContent = '';
-
-            if (!branch) {
-                errorMessage.textContent += 'Please select a branch. ';
-            }
-            if (!startDate || !endDate) {
-                errorMessage.textContent += 'Please select both start and end dates. ';
-            }
-            if (new Date(startDate) > new Date() || new Date(endDate) > new Date()) {
-                errorMessage.textContent += 'Dates cannot be in the future. ';
-            }
-            if (new Date(startDate) > new Date(endDate)) {
-                errorMessage.textContent += 'Start date cannot be later than end date. ';
-            }
-
-            if (errorMessage.textContent === '') {
-                // Perform search and populate results (dummy data here)
-                const resultsBody = document.getElementById('resultsBody');
-                resultsBody.innerHTML = `
-                    <tr>
-                        <td>Aisino A75</td>
-                        <td>Merchant A</td>
-                        <td>NBS12345</td>
-                        <td>SN123456</td>
-                        <td>1234567890123456</td>
-                        <td>${startDate}</td>
-                        <td>TRACK123</td>
-                    </tr>
-                `;
-                document.getElementById('resultsTable').style.display = 'table';
-                document.getElementById('exportButtons').style.display = 'flex';
-            }
-        }
-
-        function showDispatchModal() {
-            document.getElementById('dispatchModal').style.display = 'block';
-        }
-
-        function closeModal() {
-            document.getElementById('dispatchModal').style.display = 'none';
-        }
-
-        function clearFields() {
-            document.getElementById('merchantName').value = '';
-            document.getElementById('tid').value = '';
-            document.getElementById('terminalSerial').value = '';
-            document.getElementById('lineSerial').value = '';
-            document.getElementById('dispatchDate').value = '';
-            document.getElementById('fedexTracking').value = '';
-            document.getElementById('terminalType').selectedIndex = 0;
-            document.querySelectorAll('input[name="dispatchBranch"]').forEach(input => {
-                input.checked = false;
-            });
-        }
-
-        function addToDatabase() {
-            const terminalType = document.getElementById('terminalType').value;
-            const merchantName = document.getElementById('merchantName').value;
-            const tid = document.getElementById('tid').value;
-            const terminalSerial = document.getElementById('terminalSerial').value;
-            const lineSerial = document.getElementById('lineSerial').value;
-            const dispatchDate = document.getElementById('dispatchDate').value;
-            const fedexTracking = document.getElementById('fedexTracking').value;
-            const modalErrorMessage = document.getElementById('modal-error-message');
-
-            modalErrorMessage.textContent = '';
-
-            // Validate Branch Selection
-            const branch = document.querySelector('input[name="dispatchBranch"]:checked');
-            if (!branch) {
-                modalErrorMessage.textContent += 'Please select a dispatch branch. ';
-            }
-
-            // Validate Merchant Name
-            const merchantNameRegex = /^[a-zA-Z0-9 ]+$/;
-            if (!merchantNameRegex.test(merchantName) || merchantName.length < 4 || merchantName.length > 20) {
-                modalErrorMessage.textContent += 'Merchant Name must be alphanumeric and between 4 and 20 characters. ';
-            }
-
-            // Validate TID (case insensitive)
-            if (!/^nbs/.test(tid.toLowerCase())) {
-                modalErrorMessage.textContent += 'TID must start with "NBS" or "nbs". ';
-            }
-
-            // Validate Terminal Serial Number
-            if (terminalSerial.length < 6 || terminalSerial.length > 11) {
-                modalErrorMessage.textContent += 'Terminal Serial Number must be between 6 and 11 characters. ';
-            }
-
-            // Validate Line Serial Number
-            if (!/^\d{16,18}$/.test(lineSerial)) {
-                modalErrorMessage.textContent += 'Line Serial must be 16 to 18 digits. ';
-            }
-
-            // Validate FedEx Tracking Number
-            if (fedexTracking.length > 10) {
-                modalErrorMessage.textContent += 'FedEx Tracking Number must not exceed 10 characters. ';
-            }
-
-            if (!merchantName || !tid || !terminalSerial || !lineSerial || !dispatchDate) {
-                modalErrorMessage.textContent += 'Please fill all required fields. ';
-            }
-
-            if (modalErrorMessage.textContent === '') {
-                // Logic to add to database (dummy alert here)
-                alert(`Added to database:\nBranch: ${branch.value}\nTerminal Type: ${terminalType}\nMerchant Name: ${merchantName}\nTID: ${tid}\nTerminal Serial: ${terminalSerial}\nLine Serial: ${lineSerial}\nDate Dispatched: ${dispatchDate}\nFedEx Tracking: ${fedexTracking}`);
-                clearFields(); // Clear input fields after successful addition
-                closeModal();
-            }
-        }
-
+      
         function goToMerchantServices() {
             window.location.href = 'services.html'; // Navigate to services.html
         }
@@ -427,6 +312,7 @@
             document.body.removeChild(a);
         }
     </script>
+    <script src="firebase-config.js" type="module"></script>
 
 </body>
 </html>
